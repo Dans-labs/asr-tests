@@ -5,7 +5,7 @@ import json
 with open("apikey.txt", "r", encoding="utf-8") as f:
     api_key = f.read()
 headers = {"X-API-KEY": api_key, "Content-Type": "application/json"}  # Define python requests headers.
-willma_base_url = "https://willma.liza.surf.nl/api/v0"
+willma_base_url = "https://willma.surf.nl/api/v0"
 models = requests.get(f"{willma_base_url}/sequences", headers=headers).json()
 model = next(filter(lambda x: "whisper" in x.get("name").lower(), models))
 audio_filename = "./output.wav"
@@ -18,14 +18,19 @@ with open(audio_filename, "rb") as f:
 b64_audio = base64.b64encode(audio).decode()
 
 response = requests.post(
-  f"{willma_base_url}/audio/transcriptions", data=json.dumps(
+  f"{willma_base_url}/audio/transcriptions", 
+  data=json.dumps(
     {
-      "sequence_id": model.get("id"),
+      "sequence_id": 7, # model.get("id"),
       "input": b64_audio,
       "stream": True,
     }
-  ), headers=headers, stream=True
+  ), 
+  headers=headers, 
+  stream=True
 )
+
+print(response)
 
 for b_msg in response.iter_lines():
   msg = b_msg.decode("utf-8")
